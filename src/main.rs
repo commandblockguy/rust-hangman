@@ -1,9 +1,9 @@
 extern crate rand;
 
-use rand::Rng;
+use rand::seq::SliceRandom;
 use std::io::{self, BufRead};
 
-static WORDS: &'static str = include_str!("./top-10000-words.txt");
+include!(concat!(env!("OUT_DIR"), "/words.rs"));
 
 fn main() {
 	let stdin = io::stdin();
@@ -119,14 +119,9 @@ fn display_hangman(progress: u8) {
 }
 
 fn get_random_word() -> String {
-	let num_lines = 9897; // TODO: count automatically
-
 	let mut rng = rand::thread_rng();
-	let line_num = rng.gen_range(0, num_lines);
 
-	let word = WORDS.lines().nth(line_num).unwrap().to_ascii_uppercase();
-
-	//println!("Line number is {}.", line_num + 1);
+	let word = WORDS.choose(&mut rng).unwrap().to_ascii_uppercase();
 
 	return String::from(word);
 }
