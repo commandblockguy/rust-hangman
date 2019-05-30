@@ -37,61 +37,54 @@ fn main() {
 		}
 
 		// Get the first character of the input string, which is the only character
-		let ch = line.chars().next().unwrap().to_ascii_uppercase();
-
-		if !ch.is_alphabetic() {
-			println!("{} isn't a letter.", ch);
-			continue;
-		}
-		// Get the distance from A
-		let letter = ch as u32 - 'A' as u32;
-
-		if letters[letter as usize] {
-			println!("The letter {} has already been guessed.", ch);
-			continue;
-		}
-		// Mark the letter as used
-		letters[letter as usize] = true;
-
-		// Update the display string
-		let mut found: bool = false;
-		let mut temp_string = String::new();
-		{
-			let mut old_iter = display.chars();
-			for x in word.chars() {
-				// Get the character in the same position in the old string
-				let old_ch = old_iter.next().unwrap();
-				if x == ch {
-					found = true;
-					// Add the "correct" character to the new string
-					temp_string.push(ch);
-				} else {
-					// Add the old character to the new string
-					temp_string.push(old_ch);
-				}
+		if let Some(ch) = line.chars().next() {
+			let ch = ch.to_ascii_uppercase();
+			if !ch.is_alphabetic() {
+				println!("{} isn't a letter.", ch);
+				continue;
 			}
-		}
-		display = temp_string;
+			// Get the distance from A
+			let letter = ch as u32 - 'A' as u32;
 
-		if found {
-			println!("Yep! There's a {}!", ch);
+			if letters[letter as usize] {
+				println!("The letter {} has already been guessed.", ch);
+				continue;
+			}
+			// Mark the letter as used
+			letters[letter as usize] = true;
+
+			if word.contains(ch) {
+				display = display
+	                .chars()
+	                .zip(word.chars())
+	                .map(|(current, correct)| if correct == ch {
+	                    correct
+	                } else {
+	                    current
+	                })
+					.collect();
+					println!("Yep! There's a {}!", ch);
+			} else {
+				println!("Nope! No {}.", ch);
+				progress += 1;
+			}
+
+			if display == word {
+				println!("You Win! The word was {}!", word);
+				break;
+			}
+
+			if progress >= 7 {
+				// Display lose message
+				println!("You is dead.");
+				println!("The word was {}, by the way.", word);
+				println!("Your guess was {}.", display);
+				break;
+			}
 		} else {
-			println!("Nope! No {}.", ch);
-			progress += 1;
-		}
-
-		if display == word {
-			println!("You Win! The word was {}!", word);
-			break;
-		}
-
-		if progress >= 7 {
-			// Display lose message
-			println!("You is dead.");
-			println!("The word was {}, by the way.", word);
-			println!("Your guess was {}.", display);
-			break;
-		}
+			println!("{} isn't a letter.", line);
+			continue;
+		}		
 	}
 }
 
