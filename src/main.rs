@@ -90,11 +90,9 @@ fn main() {
 
 fn display_letters(letters: [bool; 26]) {
 	print!("Used: [");
-	for n in 0..26 {
-		if letters[n] {
-			// This is pretty bad but I'm not sure how else to do it
-			let ch = (n as u8 + 'a' as u8) as char;
-			print!("{}", ch);
+	for (idx, letter) in "ABCDEFGHIJKLMNOPQRSTUVWXYZ".chars().enumerate() {
+		if letters[idx] {
+			print!("{}", letter);
 		} else {
 			print!(" ");
 		}
